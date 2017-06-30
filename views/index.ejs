@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <button class="btn1">add menu 1</button>
+    <script>
+        var str =
+            'https://api.weixin.qq.com/cgi-bin/menu/create?access_token=XmIwX4rh6m3uELh_d3xHrkfnNxmC8QZwerHCmsBH0HweDmwV-S7xkPz1w9r3CB4j7Tn33n0DmTp9jmUaNQ5d9FYAw2AcTlWOZrw4VktUWFpz4OlGk96UFuPiwJ8aaa2IEPMeAJAZKH'
+
+        var btn1 = document.querySelector('.btn1')
+        btn1.onclick = function () {
+            var xhr = new XMLHttpRequest()
+            xhr.open('post',
+                'menu',
+                true)
+            xhr.onreadystatechange = function () {
+                if (xhr.status == 200 && xhr.readyState == 4) {
+                    console.log(xhr.responseText)
+                }
+            }
+            var data = {
+                "button": [{
+                    "name": "打扫",
+                    "sub_button": [{
+                            "type": "scancode_waitmsg",
+                            "name": "扫码带提示",
+                            "key": "rselfmenu_0_0",
+                            "sub_button": []
+                        },
+                        {
+                            "type": "scancode_push",
+                            "name": "扫码推事件",
+                            "key": "rselfmenu_0_1",
+                            "sub_button": []
+                        }
+                    ]
+                }]
+            }
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.send(JSON.stringify(data))
+        }
+    </script>
+</body>
+
+</html>

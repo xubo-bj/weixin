@@ -1,5 +1,18 @@
 var http = require('http');
 var port = 18080;
+
+http.createServer(function(req,res){
+    if(req.method.toLowerCase() === 'get'){
+
+    }
+    if(req.method.toLowerCase() === 'post'){
+        req.on('data',function(d){
+            
+        })
+    }
+
+})
+/*
 http.createServer(function(req, res) {
     res.writeHead(200, {'Content-Type': 'text/html'});
     var body = ' \
@@ -25,3 +38,4 @@ http.createServer(function(req, res) {
     res.write(body);
     res.end();
 }).listen(port);
+*/
