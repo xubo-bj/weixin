@@ -94,7 +94,7 @@ router.post('/', function* (next) {
 <MediaId><![CDATA[${s1.xml.MediaId}]]></MediaId>
 <Format><![CDATA[${s1.xml.Format}]]></Format>
 <Recognition><![CDATA[腾讯微信团队]]></Recognition>
- <MsgId>1234567890123456</MsgId>
+ <MsgId>${s1.xml.MsgId}</MsgId>
  </xml>`
     this.body = str
 
