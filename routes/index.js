@@ -64,16 +64,10 @@ router.post('/', function* (next) {
       body = null
     try {
       body = yield new Promise((resovle, reject) => {
-        console.log('begin');
-        
         this.req.on('data', d => {
-          console.log('received');
-          
           data += d
         })
         this.req.on('end', () => {
-          console.log('receive end');
-          
           resovle(data)
         })
       })
@@ -81,8 +75,12 @@ router.post('/', function* (next) {
     } catch (e) {
       console.log('catch error :', e);
     }
-    console.log('body xml :', body);
 
+    parseString(body, {
+      async: false
+    }, function (err, result) {
+      console.log(result)
+    });
     this.body = body
 
 
