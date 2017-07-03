@@ -75,6 +75,8 @@ router.post('/', function* (next) {
     } catch (e) {
       console.log('catch error :', e);
     }
+    console.log('body :',body);
+    
     let s1 = yield new Promise((resolve, reject) => {
       parseString(body, {
         async: false
