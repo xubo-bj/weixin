@@ -150,8 +150,8 @@ router.get('/auth', function* (next) {
         fetchJsapi(token2)
       ])
       let t = JSON.parse(result[1])
-      console.log('result[1] :',t);
-      
+      console.log('result[1] :', t);
+
       if (t.errcode == 0) {
         this.session.jsapiTicket = t.ticket
         this.session.jsapiTimestamp = Date.now()
@@ -170,7 +170,7 @@ router.get('/auth', function* (next) {
 
     let noncestr = 'Wm3WZYTPz0wzccnW',
       jsapi_ticket = this.session.jsapiTicket,
-      timestamp = (this.session.jsapiTimestamp+'').slice(0,-3),
+      timestamp = (this.session.jsapiTimestamp + '').slice(0, -3),
       url = 'http://www.xubo.ren/auth/',
       string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`,
       signature = sha1(string1)
@@ -178,13 +178,13 @@ router.get('/auth', function* (next) {
 
     try {
       console.log('log ---this.render');
-      console.log('log ---signature:',jsapi_ticket)
-      console.log('log ---timestamp:',timestamp);
-      
-      console.log('log ---string1:',string1);
-      console.log('log ---signature:',signature);
-      
-      
+      console.log('log ---signature:', jsapi_ticket)
+      console.log('log ---timestamp:', timestamp);
+
+      console.log('log ---string1:', string1);
+      console.log('log ---signature:', signature);
+
+
       yield this.render('auth', {
         user: result[0],
         appId: APPID,
@@ -232,8 +232,8 @@ router.get('/auth', function* (next) {
     var result = null
     if (!this.session.jsapiTimestamp || Date.now() - parseInt(this.session.jsapiTimestamp) > 7100000) {
       console.log('7100   true');
-      console.log('7100   :',this.session.jsapiTimestamp);
-      
+      console.log('7100   :', this.session.jsapiTimestamp);
+
 
       result = yield Promise.all([
         getRefreshTokenPromise(),
@@ -254,7 +254,7 @@ router.get('/auth', function* (next) {
       yield getRefreshToken()
     } else {
       if (result.length > 1) {
-        console.log('base_access_token :',result[1].access_token);
+        console.log('base_access_token :', JSON.parse(result[1]).access_token)
         yield fetchUserInfo(jsonResult.access_token, jsonResult.openid, JSON.parse(result[1]).access_token)
       } else {
         yield fetchUserInfo(jsonResult.access_token, jsonResult.openid)
@@ -311,8 +311,7 @@ router.get('/auth', function* (next) {
       yield getRefreshToken()
     } else {
       if (result.length > 1) {
-
-        console.log('base_access_token :',result[1].access_token);
+        console.log('base_access_token :', JSON.parse(result[1]).access_token)
         yield fetchUserInfo(jsonResult.access_token, jsonResult.openid, JSON.parse(result[1]).access_token)
       } else {
         yield fetchUserInfo(jsonResult.access_token, jsonResult.openid)
