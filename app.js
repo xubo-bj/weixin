@@ -24,14 +24,14 @@ app.keys = ['this is myKoaBlog'];
 app.use(session(app));
 
 
-app.use(function* (next) {
-  this.text = yield getRawBody(this.req, {
-    length: this.req.headers['content-length'],
-    limit: '1mb'
-    // encoding: contentType.parse(this.req).parameters.charset
-  })
-  yield next
-})
+// app.use(function* (next) {
+//   this.text = yield getRawBody(this.req, {
+//     length: this.req.headers['content-length'],
+//     limit: '1mb'
+//     // encoding: contentType.parse(this.req).parameters.charset
+//   })
+//   yield next
+// })
 
 
 
