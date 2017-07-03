@@ -75,16 +75,17 @@ router.post('/', function* (next) {
     } catch (e) {
       console.log('catch error :', e);
     }
-
-    parseString(body, {
-      async: false
-    }, function (err, result) {
-      console.log(result)
-    });
+    let s1 = yield new Promise((resolve, reject) => {
+      parseString(body, {
+        async: false
+      }, function (err, result) {
+        resolve(result)
+      });
+    })
     var str = `<xml>
- <ToUserName><![CDATA[${body.xml.FromUserName}]]></ToUserName>
- <FromUserName><![CDATA[${body.xml.ToUserName}]]></FromUserName>
- <CreateTime>${body.xml.CreateTime}</CreateTime>
+ <ToUserName><![CDATA[${s1.xml.FromUserName}]]></ToUserName>
+ <FromUserName><![CDATA[${s1.xml.ToUserName}]]></FromUserName>
+ <CreateTime>${s1.xml.CreateTime}</CreateTime>
  <MsgType><![CDATA[text]]></MsgType>
  <Content><![CDATA[this is a test]]></Content>
  <MsgId>1234567890123456</MsgId>
