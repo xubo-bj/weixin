@@ -251,6 +251,7 @@ router.get('/auth', function* (next) {
     this.session.refresh_token = jsonResult.refresh_token
 
     if (!jsonResult.access_token) {
+      console.log('jsonResult.access_token :',jsonResult);
       yield getRefreshToken()
     } else {
       if (result.length > 1) {
@@ -308,6 +309,8 @@ router.get('/auth', function* (next) {
 
     var jsonResult = JSON.parse(result[0])
     if (!jsonResult.access_token) {
+      console.log('jsonResult.access_token :',jsonResult);
+      
       yield getRefreshToken()
     } else {
       if (result.length > 1) {
