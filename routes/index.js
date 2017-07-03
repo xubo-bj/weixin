@@ -254,6 +254,7 @@ router.get('/auth', function* (next) {
       yield getRefreshToken()
     } else {
       if (result.length > 1) {
+        console.log('base_access_token :',result[1].access_token);
         yield fetchUserInfo(jsonResult.access_token, jsonResult.openid, JSON.parse(result[1]).access_token)
       } else {
         yield fetchUserInfo(jsonResult.access_token, jsonResult.openid)
@@ -310,6 +311,8 @@ router.get('/auth', function* (next) {
       yield getRefreshToken()
     } else {
       if (result.length > 1) {
+
+        console.log('base_access_token :',result[1].access_token);
         yield fetchUserInfo(jsonResult.access_token, jsonResult.openid, JSON.parse(result[1]).access_token)
       } else {
         yield fetchUserInfo(jsonResult.access_token, jsonResult.openid)
