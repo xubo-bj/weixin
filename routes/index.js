@@ -64,10 +64,16 @@ router.post('/', function* (next) {
       body = null
     try {
       body = yield new Promise((resovle, reject) => {
+        console.log('begin');
+        
         this.req.on('data', d => {
+          console.log('received');
+          
           data += d
         })
         this.req.on('end', () => {
+          console.log('receive end');
+          
           resovle(data)
         })
       })
