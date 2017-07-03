@@ -81,7 +81,15 @@ router.post('/', function* (next) {
     }, function (err, result) {
       console.log(result)
     });
-    this.body = body
+    var str = `<xml>
+ <ToUserName><![CDATA[${body.xml.FromUserName}]]></ToUserName>
+ <FromUserName><![CDATA[${body.xml.ToUserName}]]></FromUserName>
+ <CreateTime>${body.xml.CreateTime}</CreateTime>
+ <MsgType><![CDATA[text]]></MsgType>
+ <Content><![CDATA[this is a test]]></Content>
+ <MsgId>1234567890123456</MsgId>
+ </xml>`
+    this.body = str
 
 
   } else {
