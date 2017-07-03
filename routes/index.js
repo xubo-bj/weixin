@@ -59,8 +59,21 @@ router.post('/', function* (next) {
   var original = oriArray.join('');
   var scyptoString = sha1(original);
   if (signature == scyptoString) {
-    this.body = 'validation success'
     console.log("Success: Confirm and send echo back");
+    let data = ''
+    let body = yield new Promise((resovle, reject) => {
+      this.req.on('data', d => {
+        data += d
+      })
+      this.req.on('end', () => {
+        resovle(data)
+      })
+    })
+    console.log('body xml :',body);
+
+    this.body = body
+
+
   } else {
     this.body = 'validation fail'
     console.log("Failed!");
@@ -251,7 +264,7 @@ router.get('/auth', function* (next) {
     this.session.refresh_token = jsonResult.refresh_token
 
     if (!jsonResult.access_token) {
-      console.log('jsonResult.access_token :',jsonResult);
+      console.log('jsonResult.access_token :', jsonResult);
       yield getRefreshToken()
     } else {
       if (result.length > 1) {
@@ -310,8 +323,8 @@ router.get('/auth', function* (next) {
 
     var jsonResult = JSON.parse(result[0])
     if (!jsonResult.access_token) {
-      console.log('jsonResult.access_token :',jsonResult);
-      
+      console.log('jsonResult.access_token :', jsonResult);
+
       yield getRefreshToken()
     } else {
       if (result.length > 1) {
