@@ -60,16 +60,22 @@ router.post('/', function* (next) {
   var scyptoString = sha1(original);
   if (signature == scyptoString) {
     console.log("Success: Confirm and send echo back");
-    let data = ''
-    let body = yield new Promise((resovle, reject) => {
-      this.req.on('data', d => {
-        data += d
+    let data = '',
+      body = null
+    try {
+      body = yield new Promise((resovle, reject) => {
+        this.req.on('data', d => {
+          data += d
+        })
+        this.req.on('end', () => {
+          resovle(data)
+        })
       })
-      this.req.on('end', () => {
-        resovle(data)
-      })
-    })
-    console.log('body xml :',body);
+
+    } catch (e) {
+      console.log('catch error :', e);
+    }
+    console.log('body xml :', body);
 
     this.body = body
 
