@@ -21,10 +21,20 @@ https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx40d6bb4bd6340273&secre
 
 https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=APPID&grant_type=refresh_token&refresh_token=REFRESH_TOKEN 
 
+09d229843abe82ee87efdc61c9b383cda5123457
+09d229843abe82ee87efdc61c9b383cda5123457
+
+
+jsapi_ticket=kgt8ON7yVITDhtdwci0qeR_Uf9bxN_DpMxWLSd6uzFYZzVdXK1BY74kIqCxBsT7N4I5_j17_bnrqiITjByQ9Nw&noncestr=kgt8ON7yVITDhtdwci0qeR_Uf9bxN_DpMxWLSd6uzFYZzVdXK1BY74kIqCxBsT7N4I5_j17_bnrqiITjByQ9Nw&timestamp=1499044757&url=http://www.xubo.ren/auth/
+jsapi_ticket=kgt8ON7yVITDhtdwci0qeR_Uf9bxN_DpMxWLSd6uzFYZzVdXK1BY74kIqCxBsT7N4I5_j17_bnrqiITjByQ9Nw&noncestr=Wm3WZYTPz0wzccnW&timestamp=1499044757&url=http://www.xubo.ren/auth/
 
 appID
 wx40d6bb4bd6340273
 appsecret
 eff808be65f47862a8d98e321218fde3
-https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=appID wx40d6bb4bd6340273 appsecret eff808be65f47862a8d98e321218fde3&secret=APPSECRET
-https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx40d6bb4bd6340273&secret=eff808be65f47862a8d98e321218fde3
+
+0836
+access_tocken
+zdMJCmgz3qLg4DrpEQ6W0xV0IhXpcq14qAKqj1-SRS0t3iBZ2ZXInRxyz_lpYpBAFKFRMdngKhfczLdOva7xAgp_s0ZrYSf0GLWouQZFMOcJOer5g4qadu2wrO-h9E2kYLFcABASFZ
+jspai_ticket
+kgt8ON7yVITDhtdwci0qeR_Uf9bxN_DpMxWLSd6uzFYZzVdXK1BY74kIqCxBsT7N4I5_j17_bnrqiITjByQ9Nw

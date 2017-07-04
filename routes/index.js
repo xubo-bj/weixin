@@ -7,6 +7,15 @@ var parseString = require('xml2js').parseString;
 
 const APPID = 'wx40d6bb4bd6340273'
 const APPSECRET = 'eff808be65f47862a8d98e321218fde3'
+const access_token = {
+  access_token: null,
+  timestamp: null
+}
+const jsapi = {
+  ticket: null,
+  timestamp: null
+}
+
 
 function sha1(str) {
   var md5sum = crypto.createHash("sha1");
@@ -85,17 +94,19 @@ router.post('/', function* (next) {
     })
     console.log('s1 :', s1);
 
-
-    var str = `<xml>
- <ToUserName><![CDATA[${s1.xml.FromUserName}]]></ToUserName>
- <FromUserName><![CDATA[${s1.xml.ToUserName}]]></FromUserName>
- <CreateTime>${s1.xml.CreateTime}</CreateTime>
- <MsgType><![CDATA[${s1.xml.MsgType}]]></MsgType>
-<MediaId><![CDATA[${s1.xml.MediaId}]]></MediaId>
-<Format><![CDATA[${s1.xml.Format}]]></Format>
-<Recognition><![CDATA[腾讯微信团队]]></Recognition>
- <MsgId>${s1.xml.MsgId}</MsgId>
- </xml>`
+    var str = ''
+    /*
+        var str = `<xml>
+     <ToUserName><![CDATA[${s1.xml.FromUserName}]]></ToUserName>
+     <FromUserName><![CDATA[${s1.xml.ToUserName}]]></FromUserName>
+     <CreateTime>${s1.xml.CreateTime}</CreateTime>
+     <MsgType><![CDATA[${s1.xml.MsgType}]]></MsgType>
+    <MediaId><![CDATA[${s1.xml.MediaId}]]></MediaId>
+    <Format><![CDATA[${s1.xml.Format}]]></Format>
+    <Recognition><![CDATA[腾讯微信团队]]></Recognition>
+     <MsgId>${s1.xml.MsgId}</MsgId>
+     </xml>`
+     */
     this.body = str
 
 
@@ -107,7 +118,15 @@ router.post('/', function* (next) {
 
 
 router.get('/auth', function* (next) {
-  console.log('log refresh_token:', this.session.refresh_token);
+  console.log('cache --------------- ');
+
+  console.log('access_token :', access_token);
+  console.log('jsapi: ', jsapi);
+  console.log('session:', this.session);
+
+
+  console.log('--------------- cache ');
+
 
   var fetchAccessTokenForJsapi = function () {
     return new Promise(function (resolve, reject) {
@@ -131,12 +150,12 @@ router.get('/auth', function* (next) {
     })
   }.bind(this)
 
-  var fetchJsapi = function (access_token) {
+  var fetchJsapiPromise = function () {
     return new Promise(function (resolve, reject) {
       var options2 = {
         hostname: 'api.weixin.qq.com',
         port: 443,
-        path: `/cgi-bin/ticket/getticket?access_token=${access_token}&type=jsapi`,
+        path: `/cgi-bin/ticket/getticket?access_token=${access_token.access_token}&type=jsapi`,
         method: 'GET'
       }
       var req = https.request(options2, res => {
@@ -154,16 +173,16 @@ router.get('/auth', function* (next) {
   }.bind(this)
 
 
-  var fetchUserInfo = function* (token, openid, token2) {
+  var fetchUserInfo = function* () {
 
     var fetchUserInfoPromise = function () {
-      return new Promise(function (resolve, reject) {
-        console.log('log--- fetchUserInfoPromise token openid:', token, openid);
+      return new Promise((resolve, reject) => {
+        console.log('this.session.auth_token :', this.session.auth_token);
 
         var options1 = {
           hostname: 'api.weixin.qq.com',
           port: 443,
-          path: `/sns/userinfo?access_token=${token}&openid=${openid}&lang=zh_CN`,
+          path: `/sns/userinfo?access_token=${this.session.auth_token}&openid=${this.session.openid}&lang=zh_CN`,
           method: 'GET'
         };
         var req = https.request(options1, res => {
@@ -179,52 +198,34 @@ router.get('/auth', function* (next) {
       })
     }
 
-    var result = null
 
-    if (arguments.length == 3) {
-      console.log('arguments 3 ------------------');
-      result = yield Promise.all([
+    var user = null
+    if (!jsapi.timestamp || Date.now - parseInt(jsapi.timestamp) > 7100000) {
+      user = yield Promise.all([
         fetchUserInfoPromise(),
-        fetchJsapi(token2)
+        fetchJsapiPromise()
       ])
-      let t = JSON.parse(result[1])
-      console.log('result[1] :', t);
-
-      if (t.errcode == 0) {
-        this.session.jsapiTicket = t.ticket
-        this.session.jsapiTimestamp = Date.now()
-      }
-    }
-    if (arguments.length == 2) {
-      console.log('arguments 2 ------------------');
-
-      let temp_1 = yield fetchUserInfoPromise(),
-        temp_2 = JSON.stringify({
-          ticket: this.session.jsapiTicket,
-          timestamp: this.session.jsapiTimestamp
-        })
-      result = [temp_1, temp_2]
+      let r0 = JSON.parse(user[0])
+      let r1 = JSON.parse(user[1])
+      jsapi.ticket = r1.ticket
+      jsapi.timestamp = Date.now()
+      user = r0
+    } else {
+      user = yield fetchUserInfoPromise()
+      user = JSON.parse(user)
     }
 
     let noncestr = 'Wm3WZYTPz0wzccnW',
-      jsapi_ticket = this.session.jsapiTicket,
-      timestamp = (this.session.jsapiTimestamp + '').slice(0, -3),
+      jsapi_ticket = jsapi.ticket,
+      timestamp = (jsapi.timestamp + '').slice(0, -3),
       url = 'http://www.xubo.ren/auth/',
       string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`,
       signature = sha1(string1)
 
 
     try {
-      console.log('log ---this.render');
-      console.log('log ---signature:', jsapi_ticket)
-      console.log('log ---timestamp:', timestamp);
-
-      console.log('log ---string1:', string1);
-      console.log('log ---signature:', signature);
-
-
       yield this.render('auth', {
-        user: result[0],
+        user,
         appId: APPID,
         timestamp,
         nonceStr: noncestr,
@@ -264,49 +265,6 @@ router.get('/auth', function* (next) {
       })
     }.bind(this)
 
-
-
-    console.log('jsapitTimestamp---------- :', this.session.jsapiTimestamp, this.session.jsapiTicket);
-    var result = null
-    if (!this.session.jsapiTimestamp || Date.now() - parseInt(this.session.jsapiTimestamp) > 7100000) {
-      console.log('7100   true');
-      console.log('7100   :', this.session.jsapiTimestamp);
-
-
-      result = yield Promise.all([
-        getRefreshTokenPromise(),
-        fetchAccessTokenForJsapi()
-      ])
-    } else {
-      console.log('7100   false');
-      let temp_result = yield getRefreshTokenPromise()
-      result = [temp_result]
-    }
-
-
-
-    var jsonResult = JSON.parse(result[0])
-    this.session.refresh_token = jsonResult.refresh_token
-
-    if (!jsonResult.access_token) {
-      console.log('jsonResult.access_token :', jsonResult);
-      yield getRefreshToken()
-    } else {
-      if (result.length > 1) {
-        console.log('base_access_token :', JSON.parse(result[1]).access_token)
-        yield fetchUserInfo(jsonResult.access_token, jsonResult.openid, JSON.parse(result[1]).access_token)
-      } else {
-        console.log('else result.length > 1');
-        yield fetchUserInfo(jsonResult.access_token, jsonResult.openid)
-      }
-    }
-
-  }.bind(this)
-
-  var UseRefreshToken = function* () {
-    console.log('use refresh  -------------------');
-
-
     var UseRefreshTokenPromise = function () {
       let options = {
         hostname: 'api.weixin.qq.com',
@@ -329,46 +287,87 @@ router.get('/auth', function* (next) {
     }.bind(this)
 
     var result = null
-    console.log('log---jsapitTimestamp :', this.session.jsapiTimestamp, this.session.jsapiTicket);
 
-    if (!this.session.jsapiTimestamp || Date.now() - parseInt(this.session.jsapiTimestamp) > 7100000) {
+    if (!this.session.refresh_token || Date.now() - parseInt(this.session.refresh_token_timestamp) > 2592000000) {
+      if (!jsapi.timestamp || Date.now() - parseInt(jsapi.timestamp) > 7100000) {
+        result = yield Promise.all([
+          getRefreshTokenPromise(),
+          fetchAccessTokenForJsapi()
+        ])
+        let r0 = JSON.parse(result[0])
+        let r1 = JSON.parse(result[1])
+        let t = Date.now()
 
-      console.log('7100   true');
-      result = yield Promise.all([
-        UseRefreshTokenPromise(),
-        fetchAccessTokenForJsapi()
-      ])
-    } else {
+        this.session.auth_token = r0.access_token
+        this.session.auth_token_timestamp = t
+        this.session.refresh_token = r0.refresh_token
+        this.session.refresh_token_timestamp = t
+        this.session.openid = r0.openid
+        access_token.access_token = r1.access_token
+        access_token.timestamp = t
 
-      console.log('7100   false');
-      let temp_result = yield UseRefreshTokenPromise()
-      result = [temp_result]
-    }
-
-
-    var jsonResult = JSON.parse(result[0])
-    if (!jsonResult.access_token) {
-      console.log('jsonResult.access_token :', jsonResult);
-
-      yield getRefreshToken()
-    } else {
-      if (result.length > 1) {
-        console.log('base_access_token :', JSON.parse(result[1]).access_token)
-        yield fetchUserInfo(jsonResult.access_token, jsonResult.openid, JSON.parse(result[1]).access_token)
+        result = [r0, r1]
       } else {
-        console.log('else result.length > 1');
-        yield fetchUserInfo(jsonResult.access_token, jsonResult.openid)
+        result = yield getRefreshTokenPromise()
+
+        let r0 = JSON.parse(result)
+        let t = Date.now()
+
+        this.session.auth_token = r0.access_token
+        this.session.auth_token_timestamp = t
+        this.session.refresh_token = r0.refresh_token
+        this.session.refresh_token_timestamp = t
+        this.session.openid = r0.openid
+        result = [r0, access_token]
+      }
+    } else {
+      if (this.session.auth_token_timestamp && Date.now - parseInt(this.session.auth_token_timestamp) > 710000) {
+        if (!jsapi.timestamp || Date.now() - parseInt(jsapi.timestamp) > 7100000) {
+          result = yield Promise.all([
+            UseRefreshTokenPromise(),
+            fetchAccessTokenForJsapi()
+          ])
+          let r0 = JSON.parse(result[0])
+          let r1 = JSON.parse(result[1])
+          let t = Date.now()
+
+          this.session.auth_token = r0.access_token
+          this.session.auth_token_timestamp = t
+          access_token.access_token = r1.access_token
+          access_token.timestamp = t
+          result = [r0, r1]
+
+        } else {
+          result = yield UseRefreshTokenPromise()
+
+          let r0 = JSON.parse(result)
+          let t = Date.now()
+
+          this.session.auth_token = r0.access_token
+          this.session.auth_token_timestamp = t
+          result = [r0, access_token]
+        }
+      } else {
+        if (!jsapi.timestamp || Date.now() - parseInt(jsapi.timestamp) > 7100000) {
+          result = yield fetchAccessTokenForJsapi()
+          let r1 = JSON.parse(result)
+          access_token.access_token = r1.access_token
+          access_token.timestamp = Date.now()
+          result = [{
+            access_token: this.session.auth_token
+          }, r1]
+        } else {
+          result[{
+            access_token: this.session.auth_token
+          }, access_token]
+        }
       }
     }
   }.bind(this)
 
-  console.log('auth -----------------------');
 
-  if (this.session.refresh_token) {
-    yield UseRefreshToken()
-  } else {
-    yield getRefreshToken()
-  }
+  yield getRefreshToken()
+  yield fetchUserInfo()
 
 })
 

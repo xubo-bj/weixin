@@ -1,3 +1,4 @@
+"use strict"
 var crypto = require("crypto");
 
 function sha1(str) {
@@ -7,11 +8,18 @@ function sha1(str) {
     return str;
 }
 let noncestr = 'Wm3WZYTPz0wzccnW',
-    jsapi_ticket = this.session.jsapiTicket,
+    jsapi_ticket = 'kgt8ON7yVITDhtdwci0qeR_Uf9bxN_DpMxWLSd6uzFYZzVdXK1BY74kIqCxBsT7N4I5_j17_bnrqiITjByQ9Nw',
     timestamp = 1499044757,
     url = 'http://www.xubo.ren/auth/',
     string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`,
     signature = sha1(string1)
 
-    console.log('signature :',signature);
-    
+let a = 3
+function F1(){
+let str = `console.log(${a})`
+console.log(str);
+
+}
+F1()
+a = 45
+F1()
