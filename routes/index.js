@@ -199,6 +199,8 @@ router.get('/auth', function* (next) {
       ])
       let r0 = JSON.parse(user[0])
       let r1 = JSON.parse(user[1])
+      console.log('jsapi assignment :',jsapi);
+      
       jsapi.ticket = r1.ticket
       jsapi.timestamp = Date.now()
       user = r0
@@ -298,8 +300,6 @@ router.get('/auth', function* (next) {
         this.session.openid = r0.openid
         access_token.access_token = r1.access_token
         access_token.timestamp = t
-
-        result = [r0, r1]
       } else {
         console.log('222222222222222222');
 
@@ -313,7 +313,6 @@ router.get('/auth', function* (next) {
         this.session.refresh_token = r0.refresh_token
         this.session.refresh_token_timestamp = t
         this.session.openid = r0.openid
-        result = [r0, access_token]
       }
     } else {
       if (this.session.auth_token_timestamp && Date.now - parseInt(this.session.auth_token_timestamp) > 710000) {
@@ -332,8 +331,6 @@ router.get('/auth', function* (next) {
           this.session.auth_token_timestamp = t
           access_token.access_token = r1.access_token
           access_token.timestamp = t
-          result = [r0, r1]
-
         } else {
           console.log('44444444444444444');
 
@@ -344,7 +341,6 @@ router.get('/auth', function* (next) {
 
           this.session.auth_token = r0.access_token
           this.session.auth_token_timestamp = t
-          result = [r0, access_token]
         }
       } else {
         if (!jsapi.timestamp || Date.now() - parseInt(jsapi.timestamp) > 7100000) {
@@ -352,18 +348,12 @@ router.get('/auth', function* (next) {
           result = yield fetchAccessTokenForJsapi()
           let r1 = JSON.parse(result)
           console.log(r1);
+         console.log('access_token assignment :',access_token);
           
           access_token.access_token = r1.access_token
           access_token.timestamp = Date.now()
-          result = [{
-            access_token: this.session.auth_token
-          }, r1]
         } else {
           console.log('666666666666666');
-
-          result[{
-            access_token: this.session.auth_token
-          }, access_token]
         }
       }
     }
