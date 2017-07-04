@@ -26,8 +26,6 @@ function sha1(str) {
 
 router.get('/', function* (next) {
   var query = url.parse(this.req.url, true).query;
-  //console.log("*** URL:" + req.url);
-  console.log('query :', query);
   var signature = query.signature;
   var echostr = query.echostr;
   var timestamp = query['timestamp'];
@@ -38,8 +36,6 @@ router.get('/', function* (next) {
   oriArray[2] = "xubo" //这里是你在微信开发者中心页面里填的token，而不是****
   oriArray.sort();
   var original = oriArray.join('');
-  console.log("Original str : " + original);
-  console.log("Signature : " + signature);
   var scyptoString = sha1(original);
   if (signature == scyptoString) {
     this.body = echostr
@@ -48,9 +44,6 @@ router.get('/', function* (next) {
     this.body = 'validation fail'
     console.log("Failed!");
   }
-  // yield this.render('index', {
-  //   title: 'Hello World Koa!'
-  // });
 });
 router.post('/', function* (next) {
 
@@ -177,7 +170,6 @@ router.get('/auth', function* (next) {
 
     var fetchUserInfoPromise = function () {
       return new Promise((resolve, reject) => {
-        console.log('this.session.auth_token :', this.session.auth_token);
 
         var options1 = {
           hostname: 'api.weixin.qq.com',
@@ -241,7 +233,6 @@ router.get('/auth', function* (next) {
 
 
   var getRefreshToken = function* () {
-    console.log('get Refresh ====================');
 
     var getRefreshTokenPromise = function () {
       let options = {
@@ -290,6 +281,8 @@ router.get('/auth', function* (next) {
 
     if (!this.session.refresh_token || Date.now() - parseInt(this.session.refresh_token_timestamp) > 2592000000) {
       if (!jsapi.timestamp || Date.now() - parseInt(jsapi.timestamp) > 7100000) {
+        console.log('1111111111111');
+
         result = yield Promise.all([
           getRefreshTokenPromise(),
           fetchAccessTokenForJsapi()
@@ -308,6 +301,8 @@ router.get('/auth', function* (next) {
 
         result = [r0, r1]
       } else {
+        console.log('222222222222222222');
+
         result = yield getRefreshTokenPromise()
 
         let r0 = JSON.parse(result)
@@ -323,6 +318,8 @@ router.get('/auth', function* (next) {
     } else {
       if (this.session.auth_token_timestamp && Date.now - parseInt(this.session.auth_token_timestamp) > 710000) {
         if (!jsapi.timestamp || Date.now() - parseInt(jsapi.timestamp) > 7100000) {
+          console.log('33333333333333333333');
+
           result = yield Promise.all([
             UseRefreshTokenPromise(),
             fetchAccessTokenForJsapi()
@@ -338,6 +335,8 @@ router.get('/auth', function* (next) {
           result = [r0, r1]
 
         } else {
+          console.log('44444444444444444');
+
           result = yield UseRefreshTokenPromise()
 
           let r0 = JSON.parse(result)
@@ -349,6 +348,7 @@ router.get('/auth', function* (next) {
         }
       } else {
         if (!jsapi.timestamp || Date.now() - parseInt(jsapi.timestamp) > 7100000) {
+          console.log('55555555555555555');
           result = yield fetchAccessTokenForJsapi()
           let r1 = JSON.parse(result)
           access_token.access_token = r1.access_token
@@ -357,6 +357,8 @@ router.get('/auth', function* (next) {
             access_token: this.session.auth_token
           }, r1]
         } else {
+          console.log('666666666666666');
+
           result[{
             access_token: this.session.auth_token
           }, access_token]
