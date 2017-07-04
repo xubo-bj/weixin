@@ -7,11 +7,11 @@ var parseString = require('xml2js').parseString;
 
 const APPID = 'wx40d6bb4bd6340273'
 const APPSECRET = 'eff808be65f47862a8d98e321218fde3'
-const access_token = {
+let access_token = {
   access_token: null,
   timestamp: null
 }
-const jsapi = {
+let jsapi = {
   ticket: null,
   timestamp: null
 }

@@ -14,12 +14,6 @@ let noncestr = 'Wm3WZYTPz0wzccnW',
     string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`,
     signature = sha1(string1)
 
-let a = 3
-function F1(){
-let str = `console.log(${a})`
-console.log(str);
-
-}
-F1()
-a = 45
-F1()
+const o = {a:null}
+o.a = 35
+console.log(o);
