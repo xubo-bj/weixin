@@ -389,7 +389,7 @@ router.get('/auth', function* (next) {
 
 })
 router.post('/auth', function* (next) {
-  console.log('log --- post auth :', this.request.body.url);
+  console.log('log --- post auth :', this.request.body);
 
 
   let noncestr = 'Wm3WZYTPz0wzccnW',

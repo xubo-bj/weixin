@@ -16,9 +16,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             var xhr = new XMLHttpRequest()
             xhr.open('POST', 'auth', true)
-            xhr.send(JSON.stringify({
-                url: location.href.split('#')[0]
-            }))
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var config = JSON.parse(xhr.responseText)
@@ -36,6 +33,9 @@
                     });
                 }
             }
+            xhr.send(JSON.stringify({
+                url: location.href.split('#')[0]
+            }))
         })
     </script>
 </body>
