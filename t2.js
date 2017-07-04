@@ -14,6 +14,8 @@ let noncestr = 'Wm3WZYTPz0wzccnW',
     string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`,
     signature = sha1(string1)
 
-const o = {a:null}
-o.a = 35
-console.log(o);
+var access_token = {
+    access_token: 5
+}
+access_token.access_token = 4242
+console.log(access_token.access_token);

@@ -352,6 +352,9 @@ router.get('/auth', function* (next) {
           
           access_token.access_token = r1.access_token
           access_token.timestamp = Date.now()
+          console.log('after assignment :', access_token);
+          
+
         } else {
           console.log('666666666666666');
         }
