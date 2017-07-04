@@ -240,6 +240,10 @@ router.get('/auth', function* (next) {
       string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`,
       signature = sha1(string1)
 
+console.log('string1 :',string1);
+console.log('signature :',signature);
+
+
 
     try {
       yield this.render('auth', {

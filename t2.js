@@ -20,7 +20,7 @@ var as = {
     a:1,
     b:3
 }
-fs.writeFileSync('./t.txt',JSON.stringify(as))
-
-fs.writeFileSync('./t.txt',JSON.stringify(as))
-fs.writeFileSync('./t.txt',JSON.stringify(as))
+fs.readFile('./routes/cache.txt',function(err,d){
+    console.log(d.toString().length);
+    
+})
