@@ -236,7 +236,7 @@ router.get('/auth', function* (next) {
     let noncestr = 'Wm3WZYTPz0wzccnW',
       jsapi_ticket = jsapi.ticket,
       timestamp = (jsapi.timestamp + '').slice(0, -3),
-      url = 'http://www.xubo.ren/auth/',
+      url = 'http://www.xubo.ren/auth',
       string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`,
       signature = sha1(string1)
 
