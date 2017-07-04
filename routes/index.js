@@ -8,6 +8,12 @@ var fs = require('fs')
 
 const APPID = 'wx40d6bb4bd6340273'
 const APPSECRET = 'eff808be65f47862a8d98e321218fde3'
+
+console.log('log --- everytime ?? everytime?? ever');
+console.log('log --- everytime ?? everytime?? ever');
+console.log('log --- everytime ?? everytime?? ever');
+
+
 let access_token = {
     access_token: null,
     timestamp: null
@@ -28,7 +34,6 @@ if (Buffer.byteLength(cache) !== 0) {
     jsapi = cache.jsapi
   }
 }
-
 
 
 
@@ -233,31 +238,23 @@ router.get('/auth', function* (next) {
       user = JSON.parse(user)
     }
 
-    let noncestr = 'Wm3WZYTPz0wzccnW',
-      jsapi_ticket = jsapi.ticket,
-      timestamp = (jsapi.timestamp + '').slice(0, -3),
-      url = 'http://www.xubo.ren/auth',
-      string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`,
-      signature = sha1(string1)
-
-console.log('string1 :',string1);
-console.log('signature :',signature);
 
 
 
-    try {
-      yield this.render('auth', {
-        user,
-        appId: APPID,
-        timestamp,
-        nonceStr: noncestr,
-        signature,
-        jsApiList: JSON.stringify(["onMenuShareTimeline"])
-      })
-    } catch (e) {
-      console.log(e);
+    yield this.render('auth')
+    // try {
+    //   yield this.render('auth', {
+    //     user,
+    //     appId: APPID,
+    //     timestamp,
+    //     nonceStr: noncestr,
+    //     signature,
+    //     jsApiList: JSON.stringify(["onMenuShareTimeline"])
+    //   })
+    // } catch (e) {
+    //   console.log(e);
 
-    }
+    // }
 
   }.bind(this)
 
@@ -389,6 +386,26 @@ console.log('signature :',signature);
 
   yield getRefreshToken()
   yield fetchUserInfo()
+
+})
+router.post('/auth', function* (next) {
+  console.log('log --- post auth :', this.request.body.url);
+
+
+  let noncestr = 'Wm3WZYTPz0wzccnW',
+    jsapi_ticket = jsapi.ticket,
+    timestamp = (jsapi.timestamp + '').slice(0, -3),
+    url = this.request.body.url,
+    string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`,
+    signature = sha1(string1)
+
+  this.body = {
+    appId: APPID,
+    timestamp,
+    nonceStr: noncestr,
+    signature,
+    jsApiList: ["onMenuShareTimeline"]
+  }
 
 })
 
