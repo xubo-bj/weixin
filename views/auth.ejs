@@ -9,6 +9,7 @@
     <link href="https://cdn.bootcss.com/weui/1.1.2/style/weui.min.css" rel="stylesheet">
     <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
 </head>
+<button class="btn1">图像</button>
 
 <body>
 
@@ -16,17 +17,34 @@
         document.addEventListener('DOMContentLoaded', function () {
             var xhr = new XMLHttpRequest()
             xhr.open('POST', 'auth', true)
-            xhr.setRequestHeader('Content-Type','application/json')
+
+            //注意，发送json时需要设置头，否则koa-bodyparser解析不出来
+            xhr.setRequestHeader('Content-Type', 'application/json')
+
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var config = JSON.parse(xhr.responseText)
                     config.debug = true
-
+                    var images = ['chooseImage', 'previewImage', 'uploadImage', 'downloadImage']
+                    config.jsApiList = images
 
                     wx.config(config)
+
                     wx.ready(function () {
                         // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
-                        alert('config success " "')
+                        var btn1 = document.querySelector('.btn1')
+                        btn1.addEventListener('click', function () {
+                            wx.chooseImage({
+                                count: 1, // 默认9
+                                sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                                sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                                success: function (res) {
+                                    var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+                                    console.log('images------------');
+                                    console.log(localIds);
+                                }
+                            });
+                        })
                     });
                     wx.error(function (res) {
                         // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。

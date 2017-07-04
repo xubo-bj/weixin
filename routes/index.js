@@ -404,7 +404,6 @@ router.post('/auth', function* (next) {
     timestamp,
     nonceStr: noncestr,
     signature,
-    jsApiList: ["onMenuShareTimeline"]
   }
 
 })
