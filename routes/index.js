@@ -196,7 +196,7 @@ router.get('/auth', function* (next) {
         })
         req.end();
       })
-    }
+    }.bind(this)
 
 
     var user = null
