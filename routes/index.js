@@ -4,17 +4,32 @@ var url = require("url");
 var crypto = require("crypto");
 const https = require('https');
 var parseString = require('xml2js').parseString;
+var fs = require('fs')
 
 const APPID = 'wx40d6bb4bd6340273'
 const APPSECRET = 'eff808be65f47862a8d98e321218fde3'
 let access_token = {
-  access_token: null,
-  timestamp: null
+    access_token: null,
+    timestamp: null
+  },
+  jsapi = {
+    ticket: null,
+    timestamp: null
+  }
+
+let cache = fs.readFileSync('./routes/cache.txt')
+
+if (Buffer.byteLength(cache) !== 0) {
+  cache = JSON.parse(cache.toString())
+  if (cache.access_token) {
+    access_token = cache.access_token
+  }
+  if (cache.jsapi) {
+    jsapi = cache.jsapi
+  }
 }
-let jsapi = {
-  ticket: null,
-  timestamp: null
-}
+
+
 
 
 function sha1(str) {
@@ -199,10 +214,19 @@ router.get('/auth', function* (next) {
       ])
       let r0 = JSON.parse(user[0])
       let r1 = JSON.parse(user[1])
-      console.log('jsapi assignment :',jsapi);
-      
+      console.log('jsapi assignment :', jsapi);
+
       jsapi.ticket = r1.ticket
       jsapi.timestamp = Date.now()
+      let cache = {
+        access_token,
+        jsapi
+      }
+      try {
+        fs.writeFileSync('./routes/cache.txt', JSON.stringify(cache))
+      } catch (e) {
+        console.log('writeFileSync error :', e);
+      }
       user = r0
     } else {
       user = yield fetchUserInfoPromise()
@@ -331,6 +355,7 @@ router.get('/auth', function* (next) {
           this.session.auth_token_timestamp = t
           access_token.access_token = r1.access_token
           access_token.timestamp = t
+
         } else {
           console.log('44444444444444444');
 
@@ -347,13 +372,8 @@ router.get('/auth', function* (next) {
           console.log('55555555555555555');
           result = yield fetchAccessTokenForJsapi()
           let r1 = JSON.parse(result)
-          console.log(r1);
-         console.log('access_token assignment :',access_token);
-          
           access_token.access_token = r1.access_token
           access_token.timestamp = Date.now()
-          console.log('after assignment :', access_token);
-          
 
         } else {
           console.log('666666666666666');

@@ -14,8 +14,13 @@ let noncestr = 'Wm3WZYTPz0wzccnW',
     string1 = `jsapi_ticket=${jsapi_ticket}&noncestr=${noncestr}&timestamp=${timestamp}&url=${url}`,
     signature = sha1(string1)
 
-var access_token = {
-    access_token: 5
+
+var fs = require('fs')
+var as = {
+    a:1,
+    b:3
 }
-access_token.access_token = 4242
-console.log(access_token.access_token);
+fs.writeFileSync('./t.txt',JSON.stringify(as))
+
+fs.writeFileSync('./t.txt',JSON.stringify(as))
+fs.writeFileSync('./t.txt',JSON.stringify(as))
