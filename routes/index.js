@@ -351,6 +351,8 @@ router.get('/auth', function* (next) {
           console.log('55555555555555555');
           result = yield fetchAccessTokenForJsapi()
           let r1 = JSON.parse(result)
+          console.log(r1);
+          
           access_token.access_token = r1.access_token
           access_token.timestamp = Date.now()
           result = [{
