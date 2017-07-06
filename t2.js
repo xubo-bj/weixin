@@ -20,7 +20,9 @@ var as = {
     a:1,
     b:3
 }
-fs.readFile('./routes/cache.txt',function(err,d){
-    console.log(d.toString().length);
+if(null && 5){
+    console.log('if');
+}else{
+    console.log('else');
     
-})
+}

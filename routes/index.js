@@ -23,17 +23,26 @@ let access_token = {
     timestamp: null
   }
 
-let cache = fs.readFileSync('./routes/cache.txt')
+let jsapi_txt = fs.readFileSync('./config/jsapi.txt')
+let access_token_txt = fs.readFileSync('./config/access_token.txt')
 
-if (Buffer.byteLength(cache) !== 0) {
-  cache = JSON.parse(cache.toString())
-  if (cache.access_token) {
-    access_token = cache.access_token
-  }
-  if (cache.jsapi) {
-    jsapi = cache.jsapi
-  }
+if (Buffer.byteLength(jsapi_txt) !== 0) {
+  jsapi = JSON.parse(jsapi_txt)
 }
+if (Buffer.byteLength(access_token_txt) !== 0) {
+  access_token = JSON.parse(access_token_txt)
+}
+
+// let cache = fs.readFileSync('./config/cache.txt')
+// if (Buffer.byteLength(cache) !== 0) {
+//   cache = JSON.parse(cache.toString())
+//   if (cache.access_token) {
+//     access_token = cache.access_token
+//   }
+//   if (cache.jsapi) {
+//     jsapi = cache.jsapi
+//   }
+// }
 
 
 
@@ -223,12 +232,13 @@ router.get('/auth', function* (next) {
 
       jsapi.ticket = r1.ticket
       jsapi.timestamp = Date.now()
-      let cache = {
-        access_token,
-        jsapi
-      }
+      // let cache = {
+      //   access_token,
+      //   jsapi
+      // }
       try {
-        fs.writeFileSync('./routes/cache.txt', JSON.stringify(cache))
+        // fs.writeFileSync('./config/cache.txt', JSON.stringify(cache))
+        fs.writeFileSync('./config/jsapi.txt', JSON.stringify(jsapi))
       } catch (e) {
         console.log('writeFileSync error :', e);
       }
@@ -242,19 +252,6 @@ router.get('/auth', function* (next) {
 
 
     yield this.render('auth')
-    // try {
-    //   yield this.render('auth', {
-    //     user,
-    //     appId: APPID,
-    //     timestamp,
-    //     nonceStr: noncestr,
-    //     signature,
-    //     jsApiList: JSON.stringify(["onMenuShareTimeline"])
-    //   })
-    // } catch (e) {
-    //   console.log(e);
-
-    // }
 
   }.bind(this)
 
@@ -307,75 +304,58 @@ router.get('/auth', function* (next) {
     var result = null
 
     if (!this.session.refresh_token || Date.now() - parseInt(this.session.refresh_token_timestamp) > 2592000000) {
-      if (!jsapi.timestamp || Date.now() - parseInt(jsapi.timestamp) > 7100000) {
+      if (!access_token.timestamp || Date.now() - parseInt(access_token.timestamp) > 7100000) {
         console.log('1111111111111');
-
         result = yield Promise.all([
           getRefreshTokenPromise(),
           fetchAccessTokenForJsapi()
         ])
-        let r0 = JSON.parse(result[0])
         let r1 = JSON.parse(result[1])
-        let t = Date.now()
-
-        this.session.auth_token = r0.access_token
-        this.session.auth_token_timestamp = t
-        this.session.refresh_token = r0.refresh_token
-        this.session.refresh_token_timestamp = t
-        this.session.openid = r0.openid
         access_token.access_token = r1.access_token
-        access_token.timestamp = t
+        access_token.timestamp = Date.now()
+        fs.writeFileSync('./config/access_token.txt', JSON.stringify(access_token))
       } else {
         console.log('222222222222222222');
-
         result = yield getRefreshTokenPromise()
-
-        let r0 = JSON.parse(result)
-        let t = Date.now()
-
-        this.session.auth_token = r0.access_token
-        this.session.auth_token_timestamp = t
-        this.session.refresh_token = r0.refresh_token
-        this.session.refresh_token_timestamp = t
-        this.session.openid = r0.openid
+        result = [result]
       }
+      let r0 = JSON.parse(result[0])
+      let t = Date.now()
+      this.session.auth_token = r0.access_token
+      this.session.auth_token_timestamp = t
+      this.session.refresh_token = r0.refresh_token
+      this.session.refresh_token_timestamp = t
+      this.session.openid = r0.openid
     } else {
       if (this.session.auth_token_timestamp && Date.now - parseInt(this.session.auth_token_timestamp) > 710000) {
-        if (!jsapi.timestamp || Date.now() - parseInt(jsapi.timestamp) > 7100000) {
+        if (!access_token.timestamp || Date.now() - parseInt(access_token.timestamp) > 7100000) {
           console.log('33333333333333333333');
-
           result = yield Promise.all([
             UseRefreshTokenPromise(),
             fetchAccessTokenForJsapi()
           ])
-          let r0 = JSON.parse(result[0])
           let r1 = JSON.parse(result[1])
-          let t = Date.now()
-
-          this.session.auth_token = r0.access_token
-          this.session.auth_token_timestamp = t
           access_token.access_token = r1.access_token
-          access_token.timestamp = t
-
+          access_token.timestamp = Date.now()
+          fs.writeFileSync('./config/access_token.txt', JSON.stringify(access_token))
         } else {
           console.log('44444444444444444');
-
-          result = yield UseRefreshTokenPromise()
-
-          let r0 = JSON.parse(result)
-          let t = Date.now()
-
-          this.session.auth_token = r0.access_token
-          this.session.auth_token_timestamp = t
+          result = yield UseRefreshTokenPromise(),
+            result = [result]
         }
+        let r0 = JSON.parse(result[0])
+        let t = Date.now()
+        this.session.auth_token = r0.access_token
+        this.session.auth_token_timestamp = t
+        this.session.openid = r0.openid
       } else {
-        if (!jsapi.timestamp || Date.now() - parseInt(jsapi.timestamp) > 7100000) {
+        if (!access_token.timestamp || Date.now() - parseInt(access_token.timestamp) > 7100000) {
           console.log('55555555555555555');
           result = yield fetchAccessTokenForJsapi()
           let r1 = JSON.parse(result)
           access_token.access_token = r1.access_token
           access_token.timestamp = Date.now()
-
+          fs.writeFileSync('./config/access_token.txt', JSON.stringify(access_token))
         } else {
           console.log('666666666666666');
         }
