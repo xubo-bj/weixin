@@ -33,16 +33,6 @@ if (Buffer.byteLength(access_token_txt) !== 0) {
   access_token = JSON.parse(access_token_txt)
 }
 
-// let cache = fs.readFileSync('./config/cache.txt')
-// if (Buffer.byteLength(cache) !== 0) {
-//   cache = JSON.parse(cache.toString())
-//   if (cache.access_token) {
-//     access_token = cache.access_token
-//   }
-//   if (cache.jsapi) {
-//     jsapi = cache.jsapi
-//   }
-// }
 
 
 
@@ -232,12 +222,7 @@ router.get('/auth', function* (next) {
 
       jsapi.ticket = r1.ticket
       jsapi.timestamp = Date.now()
-      // let cache = {
-      //   access_token,
-      //   jsapi
-      // }
       try {
-        // fs.writeFileSync('./config/cache.txt', JSON.stringify(cache))
         fs.writeFileSync('./config/jsapi.txt', JSON.stringify(jsapi))
       } catch (e) {
         console.log('writeFileSync error :', e);
