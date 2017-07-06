@@ -96,15 +96,17 @@ router.post('/', function* (next) {
     } catch (e) {
       console.log('catch error :', e);
     }
+    console.log('raw-body :',body);
+    
 
     let s1 = yield new Promise((resolve, reject) => {
+      //同步的应该可以不用Promise,但出错了...
       parseString(body, {
         async: false
       }, function (err, result) {
         resolve(result)
       });
     })
-    console.log('s1 :', s1);
 
     var str = ''
     /*
